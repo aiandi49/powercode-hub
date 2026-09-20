@@ -422,6 +422,254 @@
   footer p { margin: .3rem 0; }
 
   ::selection { background: var(--seafoam); color: var(--ink); }
+
+  /* ---------- Click-to-enlarge triggers (added by JS around each stage image) ---------- */
+  .zoom-trigger {
+    appearance: none;
+    -webkit-appearance: none;
+    display: block;
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    border-radius: .7rem;
+    cursor: zoom-in;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .zoom-trigger:focus-visible { outline-offset: 2px; }
+  .zoom-badge {
+    position: absolute;
+    right: .6rem;
+    bottom: .6rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .5rem .8rem;
+    border-radius: 999px;
+    background: rgba(7,47,64,.88);
+    color: #F4FBFA;
+    font-size: .78rem;
+    font-weight: 600;
+    line-height: 1;
+    box-shadow: 0 12px 26px -12px rgba(4,22,28,.75);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+    transition: background .2s ease, transform .2s ease;
+  }
+  .zoom-badge svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+  .zoom-badge .when-touch,
+  .zoom-badge .when-mouse { display: none; }
+  @media (min-width: 600px) {
+    .zoom-badge .when-narrow { display: none; }
+    .zoom-badge .when-touch { display: inline; }
+  }
+  @media (min-width: 600px) and (hover: hover) and (pointer: fine) {
+    .zoom-badge .when-touch { display: none; }
+    .zoom-badge .when-mouse { display: inline; }
+  }
+  @media (max-width: 599px) {
+    .zoom-badge { right: .5rem; bottom: .5rem; padding: .4rem .65rem; font-size: .72rem; gap: .3rem; }
+    .zoom-badge svg { width: .9rem; height: .9rem; }
+  }
+  .zoom-trigger:hover .zoom-badge,
+  .zoom-trigger:focus-visible .zoom-badge { background: #0B4F6C; transform: translateY(-1px); }
+
+  /* ---------- Full-screen image viewer ---------- */
+  html.lb-open { overflow: hidden; padding-right: var(--lb-sbw, 0px); }
+
+  .lb {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: 1000;
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgba(47,169,180,.16), transparent 60%),
+      #041A20;
+    color: #F4FBFA;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .2s ease, visibility 0s linear .2s;
+    touch-action: none;
+    overscroll-behavior: contain;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .lb.is-open {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity .2s ease;
+  }
+  .lb :focus-visible { outline-color: #8CE3D9; }
+
+  .lb-stage {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    overflow: hidden;
+    touch-action: none;
+    cursor: zoom-in;
+  }
+  .lb-stage.is-zoomed { cursor: grab; }
+  .lb-stage.is-dragging { cursor: grabbing; }
+
+  .lb-img {
+    position: absolute;
+    top: 0; left: 0;
+    max-width: none;
+    max-height: none;
+    transform-origin: 0 0;
+    border-radius: .4rem;
+    box-shadow: 0 30px 80px -30px rgba(0,0,0,.75);
+    opacity: 0;
+    pointer-events: none;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+  .lb-img.is-ready { opacity: 1; transition: opacity .2s ease; }
+  .lb-img.is-anim.is-ready { transition: opacity .2s ease, transform .24s cubic-bezier(.2,.7,.3,1); }
+
+  .lb-msg {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    padding: 0 1.5rem;
+    max-width: 100%;
+    text-align: center;
+    font-size: .95rem;
+    color: rgba(244,251,250,.8);
+    pointer-events: none;
+  }
+  .lb-msg[hidden] { display: none; }
+
+  .lb-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: .5rem;
+    padding-top: calc(env(safe-area-inset-top, 0px) + .6rem);
+    padding-right: calc(env(safe-area-inset-right, 0px) + .75rem);
+    padding-bottom: .6rem;
+    padding-left: calc(env(safe-area-inset-left, 0px) + .75rem);
+    background: linear-gradient(to bottom, rgba(4,22,28,.85), rgba(4,22,28,0));
+    pointer-events: none;
+  }
+  .lb-cap { text-align: center; min-width: 0; }
+  .lb-cap-num {
+    display: block;
+    font-size: .74rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #8CE3D9;
+  }
+  .lb-cap-title {
+    display: block;
+    font-family: "Fraunces", Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    font-size: 1.15rem;
+    line-height: 1.15;
+    margin-top: .15rem;
+    overflow-wrap: anywhere;
+  }
+  @media (min-width: 700px) {
+    .lb-top { grid-template-columns: minmax(0, 1fr) 44px; }
+    .lb-top .lb-spacer { display: none; }
+    .lb-cap { text-align: left; }
+  }
+
+  .lb-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0;
+    background: transparent;
+    color: #F4FBFA;
+    font-family: inherit;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+    transition: background .15s ease;
+  }
+  .lb-btn:hover { background: rgba(244,251,250,.16); }
+  .lb-btn:active { background: rgba(244,251,250,.24); }
+  .lb-btn svg { width: 20px; height: 20px; }
+  .lb-close {
+    background: rgba(244,251,250,.12);
+    border: 1px solid rgba(244,251,250,.22);
+  }
+
+  .lb-bar {
+    position: absolute;
+    left: 50%;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + .9rem);
+    transform: translateX(-50%);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    width: max-content;
+    max-width: calc(100% - 1rem);
+    gap: 4px;
+    padding: 6px;
+    border-radius: 999px;
+    background: rgba(244,251,250,.12);
+    border: 1px solid rgba(244,251,250,.22);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 18px 40px -18px rgba(0,0,0,.7);
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .lb-bar { background: rgba(10,48,64,.96); }
+  }
+  .lb-bar .lb-label {
+    width: auto;
+    min-width: 60px;
+    padding: 0 .7rem;
+    border-radius: 999px;
+    font-size: .86rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .lb-bar .lb-sep { width: 1px; align-self: stretch; margin: 8px 3px; background: rgba(244,251,250,.22); }
+
+  .lb-hint {
+    position: absolute;
+    left: 50%;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 5.6rem);
+    transform: translateX(-50%);
+    z-index: 2;
+    margin: 0;
+    width: max-content;
+    max-width: calc(100% - 2rem);
+    padding: .55rem .95rem;
+    border-radius: 999px;
+    background: rgba(7,47,64,.92);
+    border: 1px solid rgba(244,251,250,.2);
+    font-size: .82rem;
+    line-height: 1.3;
+    text-align: center;
+    color: #F4FBFA;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .4s ease;
+  }
+  .lb-hint.is-shown { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lb, .lb.is-open, .lb-img.is-ready, .lb-img.is-anim.is-ready, .lb-hint, .zoom-badge { transition: none; }
+  }
 </style>
 </head>
 <body>
@@ -672,6 +920,387 @@
     });
 
     document.getElementById('year').textContent = new Date().getFullYear();
+  })();
+
+  /* ---------- Click-to-enlarge image viewer (pinch / wheel / double-tap zoom, drag to pan) ---------- */
+  (function () {
+    var root = document.documentElement;
+    var pageImgs = Array.prototype.slice.call(document.querySelectorAll('.stage-art img'));
+    if (!pageImgs.length) return;
+
+    var svg = function (d) {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + d + '</svg>';
+    };
+    var ICON = {
+      expand: svg('<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>'),
+      close: svg('<path d="M18 6 6 18M6 6l12 12"/>'),
+      plus: svg('<path d="M12 5v14M5 12h14"/>'),
+      minus: svg('<path d="M5 12h14"/>'),
+      prev: svg('<path d="m15 18-6-6 6-6"/>'),
+      next: svg('<path d="m9 18 6-6-6-6"/>')
+    };
+
+    /* ----- collect items + wrap each page image in a real <button> ----- */
+    var items = pageImgs.map(function (img) {
+      var stage = img.closest('.stage');
+      var numEl = stage && stage.querySelector('.stage-num');
+      var roleEl = stage && stage.querySelector('.stage-role');
+      var it = {
+        img: img,
+        src: img.getAttribute('src'),
+        alt: img.getAttribute('alt') || '',
+        num: numEl ? numEl.textContent.trim() : '',
+        role: roleEl ? roleEl.textContent.trim() : 'Image'
+      };
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'zoom-trigger';
+      btn.setAttribute('aria-haspopup', 'dialog');
+      btn.setAttribute('aria-label', 'View larger: ' + (it.num ? 'stage ' + it.num + ', ' : '') + it.role);
+      img.parentNode.insertBefore(btn, img);
+      btn.appendChild(img);
+      var badge = document.createElement('span');
+      badge.className = 'zoom-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.innerHTML = ICON.expand + '<span class="when-narrow">Enlarge</span><span class="when-touch">Tap to enlarge</span><span class="when-mouse">Click to enlarge</span>';
+      btn.appendChild(badge);
+      it.trigger = btn;
+      return it;
+    });
+    var N = items.length;
+
+    /* ----- build the viewer ----- */
+    var lb = document.createElement('div');
+    lb.className = 'lb';
+    lb.setAttribute('role', 'dialog');
+    lb.setAttribute('aria-modal', 'true');
+    lb.setAttribute('aria-label', 'Enlarged image viewer');
+    lb.innerHTML =
+      '<div class="lb-stage"><img class="lb-img" alt="" draggable="false" decoding="async"></div>' +
+      '<p class="lb-msg" hidden></p>' +
+      '<div class="lb-top">' +
+        '<span class="lb-spacer" aria-hidden="true"></span>' +
+        '<div class="lb-cap"><span class="lb-cap-num"></span><span class="lb-cap-title"></span></div>' +
+        '<button type="button" class="lb-btn lb-close" aria-label="Close enlarged image">' + ICON.close + '</button>' +
+      '</div>' +
+      '<p class="lb-hint" aria-hidden="true"></p>' +
+      '<div class="lb-bar" role="group" aria-label="Zoom and navigation">' +
+        '<button type="button" class="lb-btn lb-prev" aria-label="Previous image">' + ICON.prev + '</button>' +
+        '<span class="lb-sep" aria-hidden="true"></span>' +
+        '<button type="button" class="lb-btn lb-zoomout" aria-label="Zoom out">' + ICON.minus + '</button>' +
+        '<button type="button" class="lb-btn lb-label" aria-label="Toggle between fit and zoomed view">Fit</button>' +
+        '<button type="button" class="lb-btn lb-zoomin" aria-label="Zoom in">' + ICON.plus + '</button>' +
+        '<span class="lb-sep" aria-hidden="true"></span>' +
+        '<button type="button" class="lb-btn lb-next" aria-label="Next image">' + ICON.next + '</button>' +
+      '</div>' +
+      '<p class="visually-hidden lb-live" aria-live="polite"></p>';
+    document.body.appendChild(lb);
+
+    var stageEl = lb.querySelector('.lb-stage');
+    var imgEl = lb.querySelector('.lb-img');
+    var msgEl = lb.querySelector('.lb-msg');
+    var topEl = lb.querySelector('.lb-top');
+    var barEl = lb.querySelector('.lb-bar');
+    var capNum = lb.querySelector('.lb-cap-num');
+    var capTitle = lb.querySelector('.lb-cap-title');
+    var hintEl = lb.querySelector('.lb-hint');
+    var liveEl = lb.querySelector('.lb-live');
+    var labelBtn = lb.querySelector('.lb-label');
+    var closeBtn = lb.querySelector('.lb-close');
+
+    /* ----- state ----- */
+    var isOpen = false, current = 0, lastFocus = null, loadToken = 0, hintTimer = null;
+    var pushed = false, ignorePop = false;
+    var W = 0, H = 0, r0 = 0, r1 = 0;             // stage size + usable region between the bars
+    var nw = 0, nh = 0;                            // natural image size
+    var s = 1, x = 0, y = 0, minS = 1, maxS = 3;   // current scale + translation
+    var ptrs = {}, gesture = null, lastTap = null;
+
+    function clamp(v, a, b) { return Math.min(Math.max(v, a), b); }
+    function dist(a, b) { var dx = a.x - b.x, dy = a.y - b.y; return Math.sqrt(dx * dx + dy * dy); }
+
+    function measure() {
+      var r = stageEl.getBoundingClientRect();
+      W = r.width; H = r.height;
+      r0 = topEl.getBoundingClientRect().height;
+      r1 = barEl.getBoundingClientRect().top - r.top - 12;
+      if (r1 - r0 < 80) { r0 = 0; r1 = H; }
+    }
+    function computeBounds() {
+      measure();
+      var m = 8;
+      minS = Math.min(1, (W - m * 2) / nw, (r1 - r0 - m * 2) / nh);
+      maxS = Math.max(3, minS * 4);
+    }
+    /* keep the image inside sensible bounds; centre it on any axis where it is smaller than the view */
+    function clampPos() {
+      var w = nw * s, h = nh * s, c;
+      c = (0 + W - w) / 2;
+      x = clamp(x, Math.min(W - w, c), Math.max(0, c));
+      c = (r0 + r1 - h) / 2;
+      y = clamp(y, Math.min(H - h, c), Math.max(0, c));
+    }
+    function render(animate) {
+      imgEl.classList.toggle('is-anim', !!animate);
+      imgEl.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + s + ')';
+      var zoomed = s > minS * 1.02;
+      stageEl.classList.toggle('is-zoomed', zoomed);
+      labelBtn.textContent = zoomed ? Math.round(s * 100) + '%' : 'Fit';
+    }
+    function zoomAt(newS, cx, cy, animate) {
+      newS = clamp(newS, minS, maxS);
+      var ix = (cx - x) / s, iy = (cy - y) / s;
+      s = newS; x = cx - ix * s; y = cy - iy * s;
+      clampPos(); render(animate);
+    }
+    function centreX() { return W / 2; }
+    function centreY() { return (r0 + r1) / 2; }
+    function readableScale() { return Math.min(maxS, Math.max(1, minS * 2.5)); }
+    function zoomBy(f) { zoomAt(s * f, centreX(), centreY(), true); }
+    function toggleZoom(cx, cy) {
+      if (s > minS * 1.15) zoomAt(minS, cx, cy, true);
+      else zoomAt(readableScale(), cx, cy, true);
+    }
+    function panBy(dx, dy) { x += dx; y += dy; clampPos(); render(true); }
+    function fitView(animate) { s = minS; x = 0; y = 0; clampPos(); render(animate); }
+
+    /* ----- load an image into the viewer ----- */
+    function show(i) {
+      current = (i + N) % N;
+      var it = items[current];
+      var token = ++loadToken;
+      capNum.textContent = 'Stage ' + it.num + ' of ' + N;
+      capTitle.textContent = it.role;
+      liveEl.textContent = 'Stage ' + it.num + ' of ' + N + ': ' + it.role;
+      imgEl.classList.remove('is-ready');
+      msgEl.hidden = false; msgEl.textContent = 'Loading…';
+      imgEl.onload = function () {
+        if (token !== loadToken) return;
+        nw = imgEl.naturalWidth; nh = imgEl.naturalHeight;
+        imgEl.style.width = nw + 'px'; imgEl.style.height = nh + 'px';
+        computeBounds(); fitView(false);
+        imgEl.classList.add('is-ready');
+        msgEl.hidden = true;
+      };
+      imgEl.onerror = function () {
+        if (token !== loadToken) return;
+        msgEl.hidden = false; msgEl.textContent = 'Sorry, this image couldn’t be loaded.';
+      };
+      imgEl.alt = it.alt;
+      imgEl.src = it.src;
+      // some browsers don't re-fire load when the same src is set again; cover that case
+      if (imgEl.complete && imgEl.naturalWidth) imgEl.onload();
+      // warm the cache for the neighbours so next/prev feels instant
+      [1, -1].forEach(function (d) { var p = new Image(); p.src = items[(current + d + N) % N].src; });
+    }
+    function go(d) { show(current + d); }
+
+    /* ----- open / close ----- */
+    function setBackgroundInert(on) {
+      [document.getElementById('main'), document.querySelector('.controls')].forEach(function (el) {
+        if (!el) return;
+        if ('inert' in el) { el.inert = on; }
+        else if (on) { el.setAttribute('aria-hidden', 'true'); }
+        else { el.removeAttribute('aria-hidden'); }
+      });
+    }
+    function showHint() {
+      var coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+      hintEl.textContent = coarse
+        ? 'Pinch or double-tap to zoom · drag to move'
+        : 'Scroll or double-click to zoom · drag to move';
+      hintEl.classList.add('is-shown');
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(function () { hintEl.classList.remove('is-shown'); }, 3600);
+    }
+    function open(i, trigger) {
+      if (isOpen) return;
+      isOpen = true;
+      lastFocus = trigger || document.activeElement;
+      var sbw = window.innerWidth - root.clientWidth;
+      root.style.setProperty('--lb-sbw', (sbw > 0 ? sbw : 0) + 'px');
+      root.classList.add('lb-open');
+      lb.classList.add('is-open');
+      setBackgroundInert(true);
+      try { history.pushState({ lightbox: true }, ''); pushed = true; } catch (e) { pushed = false; }
+      show(i);
+      try { closeBtn.focus({ preventScroll: true }); } catch (e) { closeBtn.focus(); }
+      showHint();
+    }
+    function hide() {
+      isOpen = false;
+      loadToken++;
+      lb.classList.remove('is-open');
+      root.classList.remove('lb-open');
+      root.style.removeProperty('--lb-sbw');
+      setBackgroundInert(false);
+      hintEl.classList.remove('is-shown');
+      clearTimeout(hintTimer);
+      ptrs = {}; gesture = null; lastTap = null;
+      stageEl.classList.remove('is-dragging');
+      var back = lastFocus;
+      lastFocus = null;
+      if (back && back.focus) {
+        try { back.focus({ preventScroll: true }); } catch (e) { back.focus(); }
+        // After a touch, the browser's follow-up mouse events land on the fading backdrop and blur the
+        // button we just refocused, so put focus back once those have fired (only if nothing else took it).
+        setTimeout(function () {
+          if (isOpen) return;
+          var a = document.activeElement;
+          if (!a || a === document.body) {
+            try { back.focus({ preventScroll: true }); } catch (e) { back.focus(); }
+          }
+        }, 80);
+      }
+    }
+    function close() {
+      if (!isOpen) return;
+      hide();
+      if (pushed) { pushed = false; ignorePop = true; try { history.back(); } catch (e) { ignorePop = false; } }
+    }
+    // Phone/browser Back button closes the viewer instead of leaving the page
+    window.addEventListener('popstate', function () {
+      if (ignorePop) { ignorePop = false; return; }
+      if (isOpen) { pushed = false; hide(); }
+    });
+
+    items.forEach(function (it, i) {
+      it.trigger.addEventListener('click', function () { open(i, it.trigger); });
+    });
+    closeBtn.addEventListener('click', close);
+    lb.querySelector('.lb-prev').addEventListener('click', function () { go(-1); });
+    lb.querySelector('.lb-next').addEventListener('click', function () { go(1); });
+    lb.querySelector('.lb-zoomin').addEventListener('click', function () { zoomBy(1.5); });
+    lb.querySelector('.lb-zoomout').addEventListener('click', function () { zoomBy(1 / 1.5); });
+    labelBtn.addEventListener('click', function () { toggleZoom(centreX(), centreY()); });
+
+    /* ----- pointer gestures: drag to pan, pinch to zoom, double-tap, tap outside to close, swipe to change ----- */
+    function stagePoint(e) {
+      var r = stageEl.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+    function count() { var n = 0; for (var k in ptrs) { if (ptrs.hasOwnProperty(k)) n++; } return n; }
+    function twoPtrs() { var a = []; for (var k in ptrs) { if (ptrs.hasOwnProperty(k)) a.push(ptrs[k]); } return a; }
+    function startPan(p, moved) {
+      gesture = { type: 'pan', sx: p.x, sy: p.y, ox: x, oy: y, t: Date.now(), moved: !!moved };
+    }
+    function startPinch() {
+      var a = twoPtrs(), cx = (a[0].x + a[1].x) / 2, cy = (a[0].y + a[1].y) / 2;
+      gesture = { type: 'pinch', d0: dist(a[0], a[1]) || 1, s0: s, ix: (cx - x) / s, iy: (cy - y) / s };
+    }
+    stageEl.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if (!nw) return;
+      try { stageEl.setPointerCapture(e.pointerId); } catch (err) {}
+      ptrs[e.pointerId] = stagePoint(e);
+      imgEl.classList.remove('is-anim');
+      var n = count();
+      if (n === 1) startPan(ptrs[e.pointerId]);
+      else if (n === 2) startPinch();
+      if (e.pointerType === 'mouse' && s > minS * 1.02) stageEl.classList.add('is-dragging');
+    });
+    stageEl.addEventListener('pointermove', function (e) {
+      if (!ptrs[e.pointerId] || !gesture) return;
+      var p = stagePoint(e);
+      ptrs[e.pointerId] = p;
+      if (gesture.type === 'pinch' && count() >= 2) {
+        var a = twoPtrs(), cx = (a[0].x + a[1].x) / 2, cy = (a[0].y + a[1].y) / 2;
+        s = clamp(gesture.s0 * dist(a[0], a[1]) / gesture.d0, minS, maxS);
+        x = cx - gesture.ix * s; y = cy - gesture.iy * s;
+        clampPos(); render(false);
+      } else if (gesture.type === 'pan') {
+        var dx = p.x - gesture.sx, dy = p.y - gesture.sy;
+        if (!gesture.moved && Math.sqrt(dx * dx + dy * dy) > 6) gesture.moved = true;
+        if (s > minS * 1.02) {
+          x = gesture.ox + dx; y = gesture.oy + dy;
+          clampPos(); render(false);
+        }
+      }
+    });
+    function endPointer(e) {
+      if (!ptrs[e.pointerId]) return;
+      var p = ptrs[e.pointerId];
+      delete ptrs[e.pointerId];
+      try { stageEl.releasePointerCapture(e.pointerId); } catch (err) {}
+      stageEl.classList.remove('is-dragging');
+      var g = gesture;
+      var n = count();
+      if (n === 1) {              // pinch -> one finger left: carry on panning, but never count it as a tap
+        var rest = twoPtrs()[0];
+        startPan(rest, true);
+        return;
+      }
+      if (n > 0) return;
+      gesture = null;
+      if (e.type === 'pointercancel' || !g || g.type !== 'pan') return;
+      var dx = p.x - g.sx, dy = p.y - g.sy, dt = Date.now() - g.t;
+      if (!g.moved && dt < 450) { handleTap(p.x, p.y); return; }
+      // swipe left/right to change image (only when not zoomed in)
+      if (s <= minS * 1.02 && Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.4 && dt < 700) {
+        go(dx < 0 ? 1 : -1);
+      }
+    }
+    stageEl.addEventListener('pointerup', endPointer);
+    stageEl.addEventListener('pointercancel', endPointer);
+
+    function hitImage(px, py) {
+      return px >= x && px <= x + nw * s && py >= y && py <= y + nh * s;
+    }
+    function handleTap(px, py) {
+      var now = Date.now();
+      if (lastTap && now - lastTap.t < 340 && Math.abs(px - lastTap.x) < 32 && Math.abs(py - lastTap.y) < 32) {
+        lastTap = null;
+        toggleZoom(px, py);
+        return;
+      }
+      lastTap = { t: now, x: px, y: py };
+      if (!hitImage(px, py)) close();   // tap on the dark backdrop closes
+    }
+
+    stageEl.addEventListener('wheel', function (e) {
+      e.preventDefault();
+      if (!nw) return;
+      var d = e.deltaY * (e.deltaMode === 1 ? 16 : 1);
+      var p = stagePoint(e);
+      zoomAt(s * Math.exp(-d * (e.ctrlKey ? 0.01 : 0.0015)), p.x, p.y, false);
+    }, { passive: false });
+    stageEl.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+    /* ----- keyboard ----- */
+    document.addEventListener('keydown', function (e) {
+      if (!isOpen) return;
+      var k = e.key, zoomed = s > minS * 1.02;
+      if (k === 'Tab') {
+        var f = Array.prototype.slice.call(lb.querySelectorAll('button')).filter(function (b) { return !b.disabled; });
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1], a = document.activeElement;
+        if (!lb.contains(a)) { e.preventDefault(); first.focus(); }
+        else if (e.shiftKey && a === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && a === last) { e.preventDefault(); first.focus(); }
+        return;
+      }
+      if (k === 'Escape') { e.preventDefault(); close(); return; }
+      if (e.ctrlKey || e.metaKey || e.altKey) return;   // leave browser zoom shortcuts alone
+      if (k === 'ArrowLeft')  { e.preventDefault(); if (zoomed) panBy(90, 0); else go(-1); }
+      else if (k === 'ArrowRight') { e.preventDefault(); if (zoomed) panBy(-90, 0); else go(1); }
+      else if (k === 'ArrowUp')    { e.preventDefault(); if (zoomed) panBy(0, 90); }
+      else if (k === 'ArrowDown')  { e.preventDefault(); if (zoomed) panBy(0, -90); }
+      else if (k === '+' || k === '=') { e.preventDefault(); zoomBy(1.5); }
+      else if (k === '-' || k === '_') { e.preventDefault(); zoomBy(1 / 1.5); }
+      else if (k === '0') { e.preventDefault(); fitView(true); }
+      else if (k === 'PageUp' || k === 'PageDown' || k === 'Home' || k === 'End') { e.preventDefault(); }
+    });
+
+    /* ----- keep things right when the window / phone orientation changes ----- */
+    function onResize() {
+      if (!isOpen || !nw) return;
+      var wasFit = s <= minS * 1.02;
+      computeBounds();
+      if (wasFit) fitView(false);
+      else { s = clamp(s, minS, maxS); clampPos(); render(false); }
+    }
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', function () { setTimeout(onResize, 250); });
   })();
 </script>
 </body>
