@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Webinar-Registration Pattern — A Funnel Anatomy Guide</title>
+<meta name="description" content="An independent, section-by-section breakdown of the webinar-registration funnel pattern — how each part earns its place, and why the sequence converts.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --fs-scale: 1;
+
+    /* Light (default) */
+    --paper: #FBFDFC;
+    --paper-alt: #F1FAF7;
+    --ink: #0E2C2F;
+    --ink-soft: rgba(14,44,47,.68);
+    --ink-faint: rgba(14,44,47,.42);
+    --ocean: #0B4F6C;
+    --ocean-deep: #072F40;
+    --turquoise: #10897E;
+    --aqua: #2FA9B4;
+    --seafoam: #CFEEE3;
+    --line: rgba(14,44,47,.13);
+    --shadow: 0 24px 60px -28px rgba(11,79,108,.4);
+    --control-bg: rgba(251,253,252,.82);
+    color-scheme: light;
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #081C20;
+    --paper-alt: #0C262A;
+    --ink: #EAF7F4;
+    --ink-soft: rgba(234,247,244,.74);
+    --ink-faint: rgba(234,247,244,.46);
+    --ocean: #0A3040;
+    --ocean-deep: #04161C;
+    --turquoise: #4FD9C9;
+    --aqua: #5FD3DB;
+    --seafoam: #123A3A;
+    --line: rgba(234,247,244,.16);
+    --shadow: 0 24px 60px -20px rgba(0,0,0,.6);
+    --control-bg: rgba(8,28,32,.82);
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #081C20;
+      --paper-alt: #0C262A;
+      --ink: #EAF7F4;
+      --ink-soft: rgba(234,247,244,.74);
+      --ink-faint: rgba(234,247,244,.46);
+      --ocean: #0A3040;
+      --ocean-deep: #04161C;
+      --turquoise: #4FD9C9;
+      --aqua: #5FD3DB;
+      --seafoam: #123A3A;
+      --line: rgba(234,247,244,.16);
+      --shadow: 0 24px 60px -20px rgba(0,0,0,.6);
+      --control-bg: rgba(8,28,32,.82);
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html {
+    font-size: calc(16px * var(--fs-scale));
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 84px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transition: background .35s ease, color .35s ease;
+  }
+
+  h1, h2, h3, .display {
+    font-family: "Fraunces", Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    line-height: 1.08;
+    margin: 0;
+  }
+
+  a { color: inherit; }
+
+  img, svg { max-width: 100%; display: block; }
+
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+
+  a.skip-link {
+    position: absolute; left: 1rem;
+    top: calc(env(safe-area-inset-top, 0px) + .5rem);
+    background: var(--ink); color: var(--paper);
+    padding: .6rem 1rem; border-radius: .4rem;
+    transform: translateY(-150%);
+    transition: transform .2s ease;
+    z-index: 200;
+  }
+  a.skip-link:focus { transform: translateY(0); }
+
+  :focus-visible {
+    outline: 2px solid var(--turquoise);
+    outline-offset: 3px;
+  }
+
+  /* ---------- Controls ---------- */
+  .controls {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + .75rem);
+    right: clamp(.75rem, 3vw, 1.5rem);
+    z-index: 100;
+    display: flex;
+    gap: .4rem;
+    background: var(--control-bg);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: .35rem;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+  }
+  @supports not (backdrop-filter: blur(1px)) {
+    .controls { background: var(--paper); }
+  }
+  .controls button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: .8rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: .55rem .65rem;
+    border-radius: 999px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+  }
+  .controls button:hover { background: var(--seafoam); }
+  .controls .sep { width: 1px; background: var(--line); margin: .3rem .1rem; }
+  .controls svg { width: 1.05rem; height: 1.05rem; }
+  #fsLabel { min-width: 1.6em; text-align: center; }
+
+  /* ---------- Layout helpers ---------- */
+  section { width: 100%; padding: clamp(3rem, 8vw, 6rem) clamp(1.25rem, 6vw, 4.5rem); }
+  .prose { max-width: 62ch; }
+  .center .prose { margin-inline: auto; }
+  .eyebrow {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-weight: 500;
+    color: var(--turquoise);
+    font-size: 1rem;
+    margin-bottom: .75rem;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    background:
+      radial-gradient(120% 140% at 15% -10%, rgba(79,217,201,.20), transparent 60%),
+      radial-gradient(120% 140% at 110% 10%, rgba(47,169,180,.28), transparent 55%),
+      linear-gradient(160deg, var(--ocean-deep), var(--ocean) 65%, #0E5E70 100%);
+    color: #F4FBFA;
+    text-align: center;
+    padding-top: clamp(6.5rem, 16vw, 9rem);
+    padding-bottom: clamp(4rem, 10vw, 6rem);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-inner { max-width: 46rem; margin-inline: auto; position: relative; z-index: 1; }
+  .hero .eyebrow { color: #8CE3D9; }
+  .hero h1 {
+    font-size: clamp(2.3rem, 6.2vw, 4rem);
+    letter-spacing: -.01em;
+  }
+  .hero h1 em {
+    font-style: italic;
+    background: linear-gradient(100deg, #7CEAD9, #B9F3E6 60%, #7CEAD9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero p.lede {
+    margin-top: 1.35rem;
+    font-size: clamp(1.05rem, 2vw, 1.2rem);
+    color: rgba(244,251,250,.86);
+    max-width: 42ch;
+    margin-inline: auto;
+  }
+  .hero .hero-meta {
+    margin-top: 2.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .6rem 1.6rem;
+    font-size: .92rem;
+    color: rgba(244,251,250,.72);
+  }
+  .hero .hero-meta span { display: flex; align-items: center; gap: .45rem; }
+  .hero .hero-meta svg { width: 1rem; height: 1rem; }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: reveal .8s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  [data-reveal="1"] { animation-delay: .05s; }
+  [data-reveal="2"] { animation-delay: .18s; }
+  [data-reveal="3"] { animation-delay: .32s; }
+  @keyframes reveal { to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1; transform: none; animation: none; }
+  }
+
+  /* ---------- Intro ---------- */
+  .intro { text-align: center; }
+  .intro p { color: var(--ink-soft); font-size: 1.08rem; }
+  .intro p + p { margin-top: 1rem; }
+
+  /* ---------- Stages ---------- */
+  .stages { position: relative; }
+  .stages-rail {
+    position: relative;
+    max-width: 78rem;
+    margin-inline: auto;
+  }
+  .stage {
+    display: grid;
+    gap: 2rem;
+    align-items: center;
+    padding-block: clamp(2.75rem, 6vw, 4rem);
+    border-top: 1px solid var(--line);
+    grid-template-columns: 1fr;
+  }
+  .stage:first-child { border-top: none; }
+  @media (min-width: 860px) {
+    .stage { grid-template-columns: minmax(0,1fr) minmax(0,1.15fr); gap: 3.5rem; }
+    .stage.flip .stage-art { order: 2; }
+    .stage.flip .stage-text { order: 1; }
+  }
+
+  .stage-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 1.5px solid var(--turquoise);
+    color: var(--turquoise);
+    font-family: "Fraunces", serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .stage-text h3 { font-size: clamp(1.4rem, 2.6vw, 1.85rem); }
+  .stage-role {
+    display: block;
+    font-size: .85rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--aqua);
+    margin-bottom: .35rem;
+  }
+  .stage-text p { color: var(--ink-soft); margin-top: .85rem; max-width: 52ch; }
+  .stage-text ul {
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+    max-width: 52ch;
+  }
+  .stage-text li {
+    position: relative;
+    padding-left: 1.4rem;
+    margin-top: .55rem;
+    color: var(--ink-soft);
+    font-size: .97rem;
+  }
+  .stage-text li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: .5em;
+    width: .5rem; height: .5rem;
+    border-radius: 2px;
+    background: var(--seafoam);
+    border: 1px solid var(--turquoise);
+  }
+
+  @media (max-width: 599px) {
+    .stage-text { text-align: center; }
+    .stage-text .stage-num,
+    .stage-text p,
+    .stage-text ul { margin-inline: auto; }
+    .stage-text ul { text-align: left; }
+  }
+
+  .stage-art {
+    background: var(--paper-alt);
+    border: 1px solid var(--line);
+    border-radius: 1.1rem;
+    padding: clamp(.5rem, 1.4vw, .75rem);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .stage-art svg { color: var(--ink); width: 100%; height: auto; }
+  .stage-art img {
+    width: 100%;
+    height: auto;
+    border-radius: .7rem;
+    display: block;
+  }
+
+  /* ---------- Why it works ---------- */
+  .why {
+    background: var(--paper-alt);
+    text-align: center;
+  }
+  .why .prose { margin-inline: auto; }
+  .why p { color: var(--ink-soft); font-size: 1.05rem; }
+
+  .disclaimer {
+    margin-top: 2rem;
+    padding: 1rem 1.25rem;
+    border: 1px dashed var(--line);
+    border-radius: .75rem;
+    font-size: .88rem;
+    color: var(--ink-faint);
+    max-width: 52ch;
+    margin-inline: auto;
+  }
+
+  /* ---------- Contact ---------- */
+  .contact {
+    background:
+      radial-gradient(120% 160% at 85% 0%, rgba(79,217,201,.16), transparent 55%),
+      linear-gradient(165deg, var(--ocean-deep), var(--ocean));
+    color: #F4FBFA;
+    text-align: center;
+  }
+  .contact .eyebrow { color: #8CE3D9; }
+  .contact h2 { font-size: clamp(1.9rem, 4.4vw, 2.7rem); max-width: 26ch; margin-inline: auto; }
+  .contact p.lede {
+    margin-top: 1rem;
+    color: rgba(244,251,250,.82);
+    max-width: 48ch;
+    margin-inline: auto;
+    font-size: 1.05rem;
+  }
+  .contact-grid {
+    margin-top: 2.5rem;
+    display: grid;
+    gap: .9rem;
+    grid-template-columns: 1fr;
+    max-width: 40rem;
+    margin-inline: auto;
+  }
+  @media (min-width: 620px) {
+    .contact-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .contact-card {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    background: rgba(244,251,250,.07);
+    border: 1px solid rgba(244,251,250,.2);
+    border-radius: .85rem;
+    padding: 1rem 1.1rem;
+    text-align: left;
+    text-decoration: none;
+    color: #F4FBFA;
+    transition: background .2s ease, border-color .2s ease;
+  }
+  .contact-card:hover { background: rgba(244,251,250,.14); border-color: rgba(244,251,250,.4); }
+  .contact-card svg { width: 1.3rem; height: 1.3rem; flex-shrink: 0; color: #8CE3D9; }
+  .contact-card .label { font-size: .78rem; color: rgba(244,251,250,.65); }
+  .contact-card .value { font-size: .96rem; font-weight: 600; word-break: break-word; }
+
+  .contact-cta {
+    margin-top: 2.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    background: #F4FBFA;
+    color: var(--ocean-deep);
+    font-weight: 700;
+    font-size: 1rem;
+    padding: .95rem 1.9rem;
+    border-radius: 999px;
+    text-decoration: none;
+    box-shadow: 0 18px 40px -18px rgba(0,0,0,.5);
+  }
+  .contact-cta:hover { background: #E7F7F4; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    text-align: center;
+    padding: 2.5rem 1.5rem calc(2.5rem + env(safe-area-inset-bottom, 0px));
+    font-size: .85rem;
+    color: var(--ink-faint);
+  }
+  footer p { margin: .3rem 0; }
+
+  ::selection { background: var(--seafoam); color: var(--ink); }
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to content</a>
+
+<div class="controls" role="group" aria-label="Display settings">
+  <button id="themeToggle" type="button" aria-pressed="false">
+    <svg id="themeIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    <svg id="themeIconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+    <span class="visually-hidden">Toggle dark mode</span>
+  </button>
+  <div class="sep"></div>
+  <button id="fsDown" type="button" aria-label="Decrease text size">A−</button>
+  <span id="fsLabel" aria-live="polite">M</span>
+  <button id="fsUp" type="button" aria-label="Increase text size">A+</button>
+</div>
+
+<main id="main">
+
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow" data-reveal="1">a funnel, taken apart</p>
+      <h1 data-reveal="1">The anatomy of a <em>webinar‑registration</em> page</h1>
+      <p class="lede" data-reveal="2">A section‑by‑section teardown of the free‑masterclass funnel you've scrolled past a hundred times — why each block exists, what job it's doing, and the order that makes it work.</p>
+      <div class="hero-meta" data-reveal="3">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="9"/></svg> 6‑stage breakdown</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V6a2 2 0 0 1 2-2h9l5 5v10.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M15 4v5h5"/></svg> independent teardown</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 12 6 6L20 6"/></svg> build it with help</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="intro center">
+    <div class="prose">
+      <p>Almost every "free masterclass" registration page you've seen — the kind an ad drops you onto right before a webinar — is built from the same six moves, arranged in the same order, for the same reason: each one clears a specific objection before the next one asks for anything bigger.</p>
+      <p>None of it is about one course or one creator. It's a pattern that shows up across the whole industry because it reliably works. Below is what each stage is actually doing, in plain terms, with a rough sketch of its shape.</p>
+    </div>
+  </section>
+
+  <section class="stages">
+    <div class="stages-rail">
+
+      <div class="stage">
+        <div class="stage-art">
+          <img src="images/stage-1-open.jpg" width="1600" height="624" alt="Example open section: a dark hero band with a three-line before-and-after headline, a single CTA button, and a face beside it, mocked up on a laptop screen." loading="lazy" decoding="async">
+        </div>
+        <div class="stage-text">
+          <span class="stage-num">1</span>
+          <span class="stage-role">The Open</span>
+          <h3>One promise, stated three ways</h3>
+          <p>A dark, focused band with almost nothing in it but a headline — usually a "before → after" claim broken into three short punches, a single button, and a face. No navigation, no distractions: the page has one job, and it says so immediately.</p>
+          <ul>
+            <li>Headline names the transformation, not the product</li>
+            <li>One visible action — everything else is scroll</li>
+            <li>A real face nearby builds instant trust</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage flip">
+        <div class="stage-art">
+          <img src="images/stage-2-proof.jpg" width="1600" height="486" alt="Example proof strip: a small row of headshots, a five-star rating, and a headcount bar, mocked up on a printed card." loading="lazy" decoding="async">
+        </div>
+        <div class="stage-text">
+          <span class="stage-num">2</span>
+          <span class="stage-role">The Proof Strip</span>
+          <h3>Borrowed confidence, in one line</h3>
+          <p>A thin row — a handful of faces, five stars, a headcount — dropped right under the fold. It doesn't try to convince anyone of anything; it just tells a skimming visitor "other people already decided this was safe."</p>
+          <ul>
+            <li>Small, skimmable — a glance, not a read</li>
+            <li>A number does more work than an adjective</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-art">
+          <img src="images/stage-3-grid.jpg" width="1600" height="492" alt="Example promise grid: three outcome cards, each with a checkmark and a short benefit headline, mocked up on a notebook page." loading="lazy" decoding="async">
+        </div>
+        <div class="stage-text">
+          <span class="stage-num">3</span>
+          <span class="stage-role">The Promise Grid</span>
+          <h3>Three specific things they'll walk away with</h3>
+          <p>Not a feature list — an outcomes list. Three cards, each naming a result the attendee will have by the end, framed with just enough intrigue ("the mistake almost everyone makes") to make the live session feel necessary rather than optional.</p>
+          <ul>
+            <li>Each card answers "what do I get," not "what is this"</li>
+            <li>A check‑mark icon reads as already‑delivered, not promised</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage flip">
+        <div class="stage-art">
+          <img src="images/stage-4-mirror.jpg" width="1600" height="530" alt="Example mirror checklist: an 'Are you nodding yes? This is for you if...' card with five self-recognition checkmarks, mocked up on a desk." loading="lazy" decoding="async">
+        </div>
+        <div class="stage-text">
+          <span class="stage-num">4</span>
+          <span class="stage-role">The Mirror</span>
+          <h3>A checklist that describes the visitor back to themselves</h3>
+          <p>A short "this is for you if…" list, written in the visitor's own internal voice rather than the seller's. It doesn't sell anything — it just makes the reader nod, which is what actually does the qualifying.</p>
+          <ul>
+            <li>Written in second person, in plain everyday language</li>
+            <li>Each line names a feeling, not a demographic</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-art">
+          <img src="images/stage-5-guide.jpg" width="1600" height="498" alt="Example guide bio card: a real headshot beside a founder title and one specific credential, mocked up on a desk." loading="lazy" decoding="async">
+        </div>
+        <div class="stage-text">
+          <span class="stage-num">5</span>
+          <span class="stage-role">The Guide</span>
+          <h3>A person, not a brand, standing behind it</h3>
+          <p>A short bio with a real photo and one credible detail — a number, a before‑and‑after, a specific result. The point isn't to impress; it's to answer the unspoken "who exactly is teaching me this, and why should I listen to them" before it gets asked.</p>
+          <ul>
+            <li>One concrete credential beats five vague ones</li>
+            <li>A face here does more trust‑building than a logo would</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="stage flip">
+        <div class="stage-art">
+          <img src="images/stage-6-ask.jpg" width="1600" height="548" alt="Example ask section: three selectable date-and-time slots above a repeated 'Confirm My Slot' button, mocked up on a printed card." loading="lazy" decoding="async">
+        </div>
+        <div class="stage-text">
+          <span class="stage-num">6</span>
+          <span class="stage-role">The Ask</span>
+          <h3>A specific choice, and the same button again</h3>
+          <p>Instead of one generic "sign up," the visitor picks a concrete date and time — a small, easy decision that's psychologically much lighter than "commit to this." The same call‑to‑action then reappears at every scroll depth, so saying yes is never more than one thumb‑reach away.</p>
+          <ul>
+            <li>Picking a slot feels like scheduling, not buying</li>
+            <li>The CTA repeats; the wording never changes</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="why center">
+    <div class="prose">
+      <p class="eyebrow" style="text-align:center">why the order matters</p>
+      <h2 style="font-size:clamp(1.7rem,3.6vw,2.3rem)">Each stage removes exactly one hesitation</h2>
+      <p style="margin-top:1.1rem">Open with the promise, prove it's real, show the specific payoff, let the visitor recognize themselves, meet the person behind it, then ask for one small, concrete action. Skip a stage and a real objection goes unanswered — reorder them and the page stops building on itself. The sequence is the mechanism, not the styling.</p>
+      <div class="disclaimer">This is an independent, educational breakdown of a common funnel structure used broadly across the online‑course and coaching industry. It isn't affiliated with, endorsed by, or built from any single company's copy, imagery, or trademarks.</div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <p class="eyebrow">build it for your business</p>
+    <h2>Want this pattern built out for you?</h2>
+    <p class="lede">This hub explains the shape. If you'd rather not build it yourself, reach out and I'll help you put together your own version — your copy, your offer, your brand.</p>
+
+    <div class="contact-grid">
+      <a class="contact-card" href="mailto:ai.agent.lamar@gmail.com?subject=Webinar%20funnel%20build">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+        <span><span class="label">Email</span><br><span class="value">ai.agent.lamar@gmail.com</span></span>
+      </a>
+      <a class="contact-card" href="https://linkedin.com/in/lamar-myers-ai" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 11v5M8 8v.01M12 16v-5M12 11c0-1.5 1-2 2.2-2 1.4 0 1.8 1 1.8 2.4V16"/></svg>
+        <span><span class="label">LinkedIn</span><br><span class="value">lamar-myers-ai</span></span>
+      </a>
+      <a class="contact-card" href="https://x.com/myers_lama86860" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 4 16 16M20 4 4 20"/></svg>
+        <span><span class="label">X</span><br><span class="value">@myers_lama86860</span></span>
+      </a>
+      <a class="contact-card" href="https://instagram.com/aiagentlamar" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
+        <span><span class="label">Instagram</span><br><span class="value">@aiagentlamar</span></span>
+      </a>
+    </div>
+
+    <a class="contact-cta" href="mailto:ai.agent.lamar@gmail.com?subject=Webinar%20funnel%20build">
+      Email Lamar about your project
+    </a>
+  </section>
+
+  <footer>
+    <p>Funnel Anatomy Guide — an independent pattern breakdown, built as a reference hub.</p>
+    <p>© <span id="year"></span> Lamar Myers. Not affiliated with any company referenced or implied by this pattern.</p>
+  </footer>
+
+</main>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var themeBtn = document.getElementById('themeToggle');
+    var sun = document.getElementById('themeIconSun');
+    var moon = document.getElementById('themeIconMoon');
+
+    function applyTheme(mode) {
+      if (mode === 'dark') {
+        root.setAttribute('data-theme', 'dark');
+        sun.style.display = 'none';
+        moon.style.display = '';
+        themeBtn.setAttribute('aria-pressed', 'true');
+      } else {
+        root.setAttribute('data-theme', 'light');
+        sun.style.display = '';
+        moon.style.display = 'none';
+        themeBtn.setAttribute('aria-pressed', 'false');
+      }
+    }
+
+    var saved = null;
+    try { saved = localStorage.getItem('hub-theme'); } catch (e) {}
+    applyTheme(saved === 'dark' ? 'dark' : 'light'); // default: light
+
+    themeBtn.addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      try { localStorage.setItem('hub-theme', next); } catch (e) {}
+    });
+
+    var sizes = [
+      { key: 'S', scale: 0.925 },
+      { key: 'M', scale: 1 },
+      { key: 'L', scale: 1.15 },
+      { key: 'XL', scale: 1.3 }
+    ];
+    var idx = 1;
+    try {
+      var savedIdx = parseInt(localStorage.getItem('hub-fs-idx'), 10);
+      if (!isNaN(savedIdx) && sizes[savedIdx]) idx = savedIdx;
+    } catch (e) {}
+
+    var fsLabel = document.getElementById('fsLabel');
+    function applySize() {
+      root.style.setProperty('--fs-scale', sizes[idx].scale);
+      fsLabel.textContent = sizes[idx].key;
+    }
+    applySize();
+
+    document.getElementById('fsUp').addEventListener('click', function () {
+      idx = Math.min(idx + 1, sizes.length - 1);
+      applySize();
+      try { localStorage.setItem('hub-fs-idx', idx); } catch (e) {}
+    });
+    document.getElementById('fsDown').addEventListener('click', function () {
+      idx = Math.max(idx - 1, 0);
+      applySize();
+      try { localStorage.setItem('hub-fs-idx', idx); } catch (e) {}
+    });
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+  })();
+</script>
+</body>
+</html>
